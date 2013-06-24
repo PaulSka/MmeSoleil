@@ -3,6 +3,7 @@
 import tweepy
 import conf
 import subprocess
+import time
 
 #Auth and create acces for application
 auth = tweepy.OAuthHandler(conf.consumer_key, conf.consumer_secret)
@@ -21,11 +22,13 @@ api = tweepy.API(auth)
 #Get the current version of git repository
 current_git_version = subprocess.check_output(["git", "rev-parse", "HEAD"])
 
-while True:
-    try:
-        #Execute code
-        #Sending welcome message
-        api.update_status(u"J'ouvre ma boutique ! (version : %s)" %current_git_version)
+
+try:
+    #Execute code
+    #Sending welcome message
+    api.update_status(u"J'ouvre ma boutique ! (version : %s)" %current_git_version)
+
+    while True:
 
         #Get message to mentions timeline (20 last)
         for tweet in api.mentions_timeline():
@@ -35,10 +38,10 @@ while True:
                 tweet.retweet()
             else:
                 pass
-
-    except KeyboardInterrupt:
-        #Send message and exit
-        api.update_status(u"Je ferme la boutique !")
-
-    #Wait 25 sec
+    
+    #Wait 25 seconds
     time.sleep(25)
+
+except KeyboardInterrupt:
+    #Send message and exit
+    api.update_status(u"Je ferme la boutique !")
